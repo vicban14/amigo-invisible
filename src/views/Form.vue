@@ -1,7 +1,6 @@
 <template>
   <div class="form">
-    <h1>Form</h1>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="sendEmail">
       <div v-for="(field, index) in fields" :key="index">
         <label>
           Name:
@@ -20,6 +19,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue';
+import emailjs from 'emailjs-com';
+import { emailConfig } from '../emailConfig';
 
 interface Field {
   name: string;
@@ -34,21 +35,35 @@ export default defineComponent({
       fields.push({ name: '', email: '' });
     };
 
-    const submitForm = () => {
-      const emails = fields.map(field => field.email);
+    const sendEmail = () => {
+      fields.forEach((field) => {
+        const templateParams = {
+          name: field.name,
+          email: field.email,
+        };
+        console.log('Service ID:', import.meta.env.VITE_EMAIL_SERVICE_ID);
+        console.log('Template ID:', import.meta.env.VITE_EMAIL_TEMPLATE_ID);
+        console.log('User ID:', import.meta.env.VITE_EMAIL_USER_ID);
 
-      // Here you would make the request to the backend to send the emails
-      console.log("Sending emails to:", emails);
-
-      alert('Form submitted');
+        emailjs
+          .send(emailConfig.serviceId, emailConfig.templateId, templateParams, emailConfig.userId)
+          .then(
+            (response) => {
+              console.log('Email sent successfully!', response.status, response.text);
+            },
+            (error) => {
+              console.error('Failed to send email.', error);
+            }
+          );
+      });
     };
 
     return {
       fields,
       addFields,
-      submitForm
+      sendEmail,
     };
-  }
+  },
 });
 </script>
 
