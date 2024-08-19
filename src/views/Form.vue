@@ -35,15 +35,49 @@ export default defineComponent({
       fields.push({ name: '', email: '' });
     };
 
+    function shuffleArray<T>(array: T[]): T[] {
+      let currentIndex = array.length;
+      let randomIndex: number;
+
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+      }
+
+      return array;
+    }
+
+    function hasCoincidences(arr1: any[], arr2: any[]): boolean {
+      return arr1.some((value, index) => value === arr2[index]);
+    }
+
+    function generateUniqueArray<T>(originalArray: T[], maxAttempts: number = 10): T[] {
+      let attempts = 0;
+      let newArray = [...originalArray];
+
+      do {
+        newArray = shuffleArray([...originalArray]); // Generar una copia aleatoria
+        attempts++;
+      } while (hasCoincidences(originalArray, newArray) && attempts < maxAttempts);
+
+      if (attempts >= maxAttempts) {
+        throw new Error('Unable to generate a unique array after maximum attempts');
+      }
+
+      return newArray;
+    }
+
+
     const sendEmail = () => {
-      fields.forEach((field) => {
+      const beneficiaryNamesList = generateUniqueArray(fields.map(field => field.name))
+
+      fields.forEach((field, index) => {
         const templateParams = {
-          name: field.name,
+          userName: field.name,
           email: field.email,
+          beneficiary: beneficiaryNamesList[index]
         };
-        console.log('Service ID:', import.meta.env.VITE_EMAIL_SERVICE_ID);
-        console.log('Template ID:', import.meta.env.VITE_EMAIL_TEMPLATE_ID);
-        console.log('User ID:', import.meta.env.VITE_EMAIL_USER_ID);
 
         emailjs
           .send(emailConfig.serviceId, emailConfig.templateId, templateParams, emailConfig.userId)
@@ -56,6 +90,7 @@ export default defineComponent({
             }
           );
       });
+
     };
 
     return {
