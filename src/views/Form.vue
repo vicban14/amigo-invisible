@@ -26,6 +26,7 @@
         </div>
         
         <button type="button" class="add-button" @click="addFields">Añadir otro amigo</button>
+        <button type="button" class="remove-button" @click="removeFields">Eliminar un amigo</button>
         <button type="submit" class="submit-button">Enviar</button>
       </form>
     </div>
@@ -49,7 +50,7 @@ export default defineComponent({
 
     const setupParticipants = () => {
       if (numParticipants.value && numParticipants.value > 0) {
-        fields.length = 0; // Clear existing fields
+        fields.length = 0;
         for (let i = 0; i < numParticipants.value; i++) {
           fields.push({ name: '', email: '' });
         }
@@ -60,6 +61,10 @@ export default defineComponent({
 
     const addFields = () => {
       fields.push({ name: '', email: '' });
+    };
+
+    const removeFields = () => {
+      fields.pop();
     };
 
     function shuffleArray<T>(array: T[]): T[] {
@@ -123,6 +128,7 @@ export default defineComponent({
       numParticipants,
       setupParticipants,
       addFields,
+      removeFields,
       sendEmail
     };
   }
@@ -231,12 +237,11 @@ input:focus {
   border-color: #e74c3c;
 }
 
-.add-button, .submit-button {
+.add-button, .remove-button, .submit-button {
   padding: 0.8rem 1.5rem;
   font-size: 1.2rem;
   cursor: pointer;
   color: #fff;
-  background-color: #e74c3c;
   border: 2px solid #fff;
   border-radius: 10px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -246,12 +251,12 @@ input:focus {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.add-button:hover, .submit-button:hover {
+.add-button:hover, .remove-button:hover, .submit-button:hover {
   background-color: #c0392b;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
-.add-button:before, .submit-button:before {
+.add-button:before, .remove-button:before, .submit-button:before {
   content: '';
   position: absolute;
   top: -5px;
@@ -265,7 +270,7 @@ input:focus {
   opacity: 0;
 }
 
-.add-button:hover:before, .submit-button:hover:before {
+.add-button:hover:before, .remove-button:hover, .submit-button:hover:before {
   opacity: 1;
 }
 
@@ -275,5 +280,19 @@ input:focus {
 
 .add-button:hover {
   background-color: #2ecc71;
+}
+
+.remove-button {
+  background-color: #e74c3c;
+}
+
+.submit-button {
+  background-color: #ffffff;
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.submit-button:hover {
+  color: #ffffff;
 }
 </style>
