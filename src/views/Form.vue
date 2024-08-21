@@ -4,9 +4,17 @@
     
     <div class="form-container">
       <h1>Selecciona los participantes</h1>
-      <p class="instructions">Pulsa "Añadir otro amigo" tantas veces como participantes quieres que haya. Completa el formulario y selecciona "Enviar" para enviar los emails.</p>
+      <p class="instructions">
+        Ingresa el número de participantes y pulsa "Añadir participantes". Completa el formulario para cada participante y selecciona "Enviar" para enviar los emails.
+      </p>
       
       <form @submit.prevent="sendEmail">
+        <div class="participant-setup">
+          <label for="num-participants">Número de participantes:</label>
+          <input id="num-participants" v-model.number="numParticipants" type="number" min="1" placeholder="Número de participantes" />
+          <button type="button" class="setup-button" @click="setupParticipants">Añadir participantes</button>
+        </div>
+        
         <div v-for="(field, index) in fields" :key="index" class="form-field">
           <span>Participante {{index + 1}}</span>
           <label>
@@ -16,6 +24,7 @@
             <input v-model="field.email" type="email" placeholder="Email" required />
           </label>
         </div>
+        
         <button type="button" class="add-button" @click="addFields">Añadir otro amigo</button>
         <button type="submit" class="submit-button">Enviar</button>
       </form>
@@ -24,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import emailjs from 'emailjs-com';
 import { emailConfig } from '../emailConfig';
 
@@ -35,7 +44,19 @@ interface Field {
 
 export default defineComponent({
   setup() {
-    const fields = reactive<Field[]>([{ name: '', email: '' }]);
+    const fields = reactive<Field[]>([]);
+    const numParticipants = ref<number | null>(null);
+
+    const setupParticipants = () => {
+      if (numParticipants.value && numParticipants.value > 0) {
+        fields.length = 0; // Clear existing fields
+        for (let i = 0; i < numParticipants.value; i++) {
+          fields.push({ name: '', email: '' });
+        }
+      } else {
+        alert('Por favor, ingresa un número válido de participantes.');
+      }
+    };
 
     const addFields = () => {
       fields.push({ name: '', email: '' });
@@ -99,6 +120,8 @@ export default defineComponent({
 
     return {
       fields,
+      numParticipants,
+      setupParticipants,
       addFields,
       sendEmail
     };
@@ -134,9 +157,9 @@ export default defineComponent({
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   max-width: 70vw;
-  text-align: center;
   max-height: 90vh;
   overflow-y: auto;
+  text-align: center;
 }
 
 h1 {
@@ -152,6 +175,42 @@ h1 {
   color: #34495e;
 }
 
+.participant-setup {
+  margin-bottom: 2rem;
+}
+
+.participant-setup label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.participant-setup input {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 2px solid #c0392b;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
+.setup-button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #fff;
+  background-color: #2ecc71;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.setup-button:hover {
+  background-color: #27ae60;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
 .form-field {
   display: flex;
   flex-direction: column;
@@ -160,6 +219,7 @@ h1 {
 }
 
 input {
+  margin-right: 0.5vw;
   padding: 0.5rem;
   border-radius: 8px;
   border: 2px solid #c0392b;
@@ -181,6 +241,8 @@ input:focus {
   border-radius: 10px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   margin-top: 1rem;
+  margin-left: 0.5vw;
+  margin-right: 0.5vw;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
