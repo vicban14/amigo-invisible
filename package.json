@@ -1,15 +1,19 @@
 {
-  "name": "secret-santa-web",
+  "name": "amigo-invisible",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://vicban14.github.io/amigo-invisible/",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "vite build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "emailjs-com": "^3.2.0",
+    "gh-pages": "^6.1.1",
     "vue": "^3.4.29",
     "vue-router": "^4.0.13"
   },
